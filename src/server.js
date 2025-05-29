@@ -15,11 +15,23 @@ const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 
 // Middleware
 app.use(cors({
-  origin: 'http://localhost:5173', // Your Vite frontend URL
+  origin: process.env.NODE_ENV === 'production' 
+    ? process.env.FRONTEND_URL // Your Vercel frontend URL
+    : 'http://localhost:5173',
   credentials: true
 }));
 app.use(bodyParser.json());
 app.use(express.static('public'));
+
+// Root route
+app.get('/', (req, res) => {
+  res.json({ message: 'Senyas Backend API is running' });
+});
+
+// Health check endpoint
+app.get('/health', (req, res) => {
+  res.json({ status: 'ok' });
+});
 
 // Configure multer for file uploads
 const storage = multer.diskStorage({
